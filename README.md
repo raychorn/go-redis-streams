@@ -1,37 +1,36 @@
 # go-redis-streams
 Demo using messaging with Redis Streams in Golang
 
-**Utilizando mensageria na pratica com Redis streams e Golang**
+**Using messengerin practice with Redis streams and Golang**
 
 [![YouTube Video Explanation](http://img.youtube.com/vi/Kc-tcrP0c10/0.jpg)](http://www.youtube.com/watch?v=Kc-tcrP0c10 "Utilizando mensageria na pratica com Redis streams e Golang")
 
 # Redis
 
-**O que e?**
+**What is it?**
 
-Redis e um Banco de dados não relacional OpenSource, que tem dentro de sua estrutura o armazenamento chave-valor.
-O Redis tem estratégias para guardar os dados em memória e em disco, garantindo resposta rápida e persistência de dados. Os principais casos de uso do Redis incluem cache, gerenciamento de sessões, PUB/SUB.
+Redis is an OpenSource non-relational database, which has key-value storage within its structure. Redis has strategies for storing data in memory and on disk, ensuring fast response and data persistence. Redis's main use cases include caching, session management, PUB/SUB.
 
 # Redis Streams para Mensageria (ou Messaging)
 
 ![Design of flow](/media/flow.png)
 
-**Pontos Positivos**
+**Positive Points**
 
-- Suporta Topicos e Filas 
-- Persistencia em disco (através dos arquivos RDB)
-- Alta disponibilidade (com Clusterizacao)
-- Alto Throughput
-- Permite Reprocessamento
-- Possui Consumer Groups
-- Latencia minima
-- Nao necessita de zookeper
-- Ocupa muito menos recursos em relacao ao (Kafka/RabbitMQ)
+Supports Topicos and Queues
+Persistence on disk (through RDB files)
+High availability (with Clusterizacao)
+High Throughput
+Allows Reprocessing
+Owns Consumer Groups
+Latencia minima
+No need for zookeper
+It takes up far fewer resources in relation to (Kafka/RabbitMQ)
 
-**Pontos Negativos**
+**Negatives**
 
-- Nao garante ordem de entrega (ainda)
-- Msgs processadas com error nao retorna para redistribuicao
+Does not guarantee delivery order (yet)
+Msgs processed with error does not return for redistribution
 
 
 # Links
