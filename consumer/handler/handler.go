@@ -11,6 +11,7 @@ import (
 func HandlerFactory() func(t event.Type) Handler {
 
 	return func(t event.Type) Handler {
+		fmt.Printf("*** t -> %s", t)
 		switch t {
 		case event.LikeType:
 			return NewLikeHandler()

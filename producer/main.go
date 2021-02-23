@@ -16,6 +16,11 @@ var (
 	client     *redis.Client
 )
 
+type Message struct {
+	ConnectorId string
+	ConnectorStatus string
+}
+
 func init() {
 	var err error
 	client, err = utils.NewRedisClient()
@@ -40,6 +45,8 @@ func generateEvent() {
 
 			newID, err := produceMsg(map[string]interface{}{
 				"type": string(eventType),
+				"data": Message{ConnectorId: "1", ConnectorStatus: "Active"}
+				/*
 				"data": &evt.LikeEvent{
 					Base: &evt.Base{
 						Type:     eventType,
@@ -47,6 +54,7 @@ func generateEvent() {
 					},
 					UserID: userID,
 				},
+				*/
 			})
 
 			checkError(err, newID, string(eventType), userID)
@@ -57,6 +65,8 @@ func generateEvent() {
 
 			newID, err := produceMsg(map[string]interface{}{
 				"type": string(eventType),
+				"data": Message{ConnectorId: "1", ConnectorStatus: "Active"}
+				/*
 				"data": &evt.CommentEvent{
 					Base: &evt.Base{
 						Type:     eventType,
@@ -65,6 +75,7 @@ func generateEvent() {
 					UserID:  userID,
 					Comment: comment,
 				},
+				*/
 			})
 
 			checkError(err, newID, string(eventType), userID, comment)

@@ -49,3 +49,20 @@ services:
     depends_on:
       - redis
     restart: always
+
+  producer_one:
+    image: raychorn/buster_golang:02-20-21a
+    container_name: go-producer-one
+    build: '.'
+    environment:
+      REDIS_HOST: redis
+      STREAM: events
+    volumes:
+      - ./producer/:/producer/
+    entrypoint:
+      - /bin/bash
+    tty: true
+    stdin_open: true
+    depends_on:
+      - redis
+    restart: always
