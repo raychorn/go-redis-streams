@@ -58,11 +58,12 @@ services:
       REDIS_HOST: redis
       STREAM: events
     volumes:
-      - ./producer/:/producer/
+      - .:/workspaces/
     entrypoint:
-      - /bin/bash
+      - /usr/bin/zsh
     tty: true
     stdin_open: true
+    command: ["/workspaces/run-producer.sh"]
     depends_on:
       - redis
     restart: always

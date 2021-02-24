@@ -2,13 +2,13 @@ package main
 
 import (
 	"fmt"
-	"math/rand"
 	"os"
 	"time"
+	"encoding"
 
-	evt "github.com/felipeagger/go-redis-streams/packages/event"
 	"github.com/felipeagger/go-redis-streams/packages/utils"
 	"github.com/go-redis/redis/v7"
+	"github.com/vmihailenco/msgpack/v4"
 )
 
 var (
@@ -16,10 +16,95 @@ var (
 	client     *redis.Client
 )
 
-type Message struct {
+////////////////////////////////////////////////////
+type UpdateEvent struct {
+	*Base
+	UserID  uint64
 	ConnectorId string
 	ConnectorStatus string
 }
+
+func (o *UpdateEvent) MarshalBinary() (data []byte, err error) {
+	return msgpack.Marshal(o)
+}
+
+func (o *UpdateEvent) UnmarshalBinary(data []byte) error {
+	return msgpack.Unmarshal(data, o)
+}
+
+type Type string
+
+const (
+	UpdateType Type = "Update"
+)
+
+type Base struct {
+	ID       string
+	ConnectorId string
+	ConnectorStatus string
+	Type     Type
+	DateTime time.Time
+	Retry    bool
+}
+
+// Event ...
+type Event interface {
+	GetID() string
+	GetConnectorId() string
+	GetConnectorStatus() string
+	GetType() Type
+	GetDateTime() time.Time
+	SetID(id string)
+	encoding.BinaryMarshaler
+	encoding.BinaryUnmarshaler
+}
+
+func New(t Type) (Event, error) {
+	b := &Base{
+		Type: t,
+	}
+
+	switch t {
+
+	case UpdateType:
+		return &UpdateEvent{
+			Base: b,
+		}, nil
+
+	}
+
+	return nil, fmt.Errorf("type %v not supported", t)
+}
+
+func (o *Base) GetID() string {
+	return o.ID
+}
+
+func (o *Base) SetID(id string) {
+	o.ID = id
+}
+
+func (o *Base) GetConnectorId() string {
+	return o.ConnectorId
+}
+
+func (o *Base) GetConnectorStatus() string {
+	return o.ConnectorStatus
+}
+
+func (o *Base) GetType() Type {
+	return o.Type
+}
+
+func (o *Base) GetDateTime() time.Time {
+	return o.DateTime
+}
+
+func (o *Base) String() string {
+
+	return fmt.Sprintf("id:%s type:%s", o.ID, o.Type)
+}
+////////////////////////////////////////////////////
 
 func init() {
 	var err error
@@ -30,56 +115,30 @@ func init() {
 }
 
 func main() {
-	generateEvent()
+	for {
+		generateEvent()
+		time.Sleep(10 * time.Second)
+	}
 }
 
 func generateEvent() {
 	var userID uint64 = 0
 	for i := 0; i < 10; i++ {
 
-		userID++ //uint64(rand.Intn(1000))
+		userID++
 
-		eventType := []evt.Type{evt.LikeType, evt.CommentType}[rand.Intn(2)]
-
-		if eventType == evt.LikeType {
-
-			newID, err := produceMsg(map[string]interface{}{
-				"type": string(eventType),
-				"data": Message{ConnectorId: "1", ConnectorStatus: "Active"}
-				/*
-				"data": &evt.LikeEvent{
-					Base: &evt.Base{
-						Type:     eventType,
-						DateTime: time.Now(),
-					},
-					UserID: userID,
+		newID, err := produceMsg(map[string]interface{}{
+			"type": string(UpdateType),
+			"data": &UpdateEvent{
+				Base: &Base{
+					Type:     UpdateType,
+					DateTime: time.Now(),
 				},
-				*/
-			})
+				UserID: userID,
+			},
+		})
 
-			checkError(err, newID, string(eventType), userID)
-
-		} else {
-
-			comment := []string{"Go e Top!", "Go e demais!", "Go e vida!"}[rand.Intn(3)]
-
-			newID, err := produceMsg(map[string]interface{}{
-				"type": string(eventType),
-				"data": Message{ConnectorId: "1", ConnectorStatus: "Active"}
-				/*
-				"data": &evt.CommentEvent{
-					Base: &evt.Base{
-						Type:     eventType,
-						DateTime: time.Now(),
-					},
-					UserID:  userID,
-					Comment: comment,
-				},
-				*/
-			})
-
-			checkError(err, newID, string(eventType), userID, comment)
-		}
+		checkError(err, newID, string(UpdateType), userID)
 
 	}
 }
