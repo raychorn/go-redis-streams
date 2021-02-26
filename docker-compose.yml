@@ -58,12 +58,14 @@ services:
       REDIS_HOST: redis
       STREAM: events
     volumes:
-      - .:/workspaces/
+      - .:/workspaces/go-redis-streams/
+      - /Users/raychorn/OneDrive/##projects/docker-projects/asset-mgmt/:/workspaces/asset-mgmt/
     entrypoint:
       - /usr/bin/zsh
     tty: true
     stdin_open: true
-    command: ["/workspaces/run-producer.sh"]
+    #command: ["/workspaces/run-producer.sh"]
+    command: ["/workspaces/asset-mgmt/build-all.sh"]
     depends_on:
       - redis
     restart: always
